@@ -118,6 +118,7 @@ AtDCore.prototype.findSuggestion = function(element) {
     errorDescription["id"] = this.getSurrogatePart(metaInfo, 'id');
     errorDescription["subid"] = this.getSurrogatePart(metaInfo, 'subid');
     errorDescription["description"] = this.getSurrogatePart(metaInfo, 'description');
+    errorDescription["coveredtext"] = this.getSurrogatePart(metaInfo, 'coveredtext');
     errorDescription["context"] = this.getSurrogatePart(metaInfo, 'context');
     var suggestions = this.getSurrogatePart(metaInfo, 'suggestions');
     if (suggestions) {
