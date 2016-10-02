@@ -83,6 +83,7 @@ AtDCore.prototype.processJSON = function(responseJSON) {
         suggestion["ruleid"]      = match.rule.id;
         suggestion["subid"]       = match.rule.subId;
         suggestion["its20type"]   = match.rule.issueType;
+        suggestion["context"]     = match.context.text;
         var urls = match.rule.urls;
         if (urls && urls.length > 0) {
             if (urls[0].value) {
@@ -117,7 +118,7 @@ AtDCore.prototype.findSuggestion = function(element) {
     errorDescription["id"] = this.getSurrogatePart(metaInfo, 'id');
     errorDescription["subid"] = this.getSurrogatePart(metaInfo, 'subid');
     errorDescription["description"] = this.getSurrogatePart(metaInfo, 'description');
-    errorDescription["coveredtext"] = this.getSurrogatePart(metaInfo, 'coveredtext');
+    errorDescription["context"] = this.getSurrogatePart(metaInfo, 'context');
     var suggestions = this.getSurrogatePart(metaInfo, 'suggestions');
     if (suggestions) {
         errorDescription["suggestions"] = suggestions.split("#");
@@ -155,6 +156,9 @@ AtDCore.prototype.markMyWords = function() {
             previousSpanStart = spanStart;
             
             var ruleId = suggestion.ruleid;
+	    if (typeof suggestion.subid != 'undefined') {
+		ruleId += '[' + suggestion.subid + ']';
+	    }
             var locqualityissuetype = suggestion.its20type;
             var cssName;
             if (locqualityissuetype == "misspelling") {
@@ -168,7 +172,8 @@ AtDCore.prototype.markMyWords = function() {
             }
             var delim = this.surrogateAttributeDelimiter;
             var coveredText = newText.substring(spanStart, spanEnd);
-            var metaInfo = ruleId + delim + suggestion.subid + delim + suggestion.description + delim + suggestion.suggestions + delim + coveredText;
+            var metaInfo = ruleId + delim + suggestion.subid + delim + suggestion.description + delim 
+		+ suggestion.suggestions + delim + coveredText + delim + suggestion.context;
 	        //            var metaInfo = ruleId + delim + suggestion.description + delim + suggestion.suggestions;
             if (suggestion.moreinfo) {
                 metaInfo += delim + suggestion.moreinfo;
@@ -235,8 +240,10 @@ AtDCore.prototype.getSurrogatePart = function(surrogateString, part) {
         return parts[3];
     } else if (part == 'coveredtext') {
         return parts[4];
-    } else if (part == 'url' && parts.length >= 5) {
+    } else if (part == 'context') {
         return parts[5];
+    } else if (part == 'url' && parts.length >= 6) {
+        return parts[6];
     }
     console.log("No part '" + part + "' found in surrogateString: " + surrogateString);
     return null;
@@ -556,6 +563,14 @@ AtDCore.prototype.isIE = function() {
       {
       },
 
+      _serverLog : function(message)
+      {
+          jQuery.ajax({
+              url: 'http://riuraueditors.cat/correctorweb/log/log.php?msg=' + message + " - agent: " + navigator.userAgent,
+              type: 'POST'
+          });
+      },
+
       _removeWords : function(w) 
       {
          var ed = this.editor, dom = ed.dom, se = ed.selection, b = se.getBookmark();
@@ -653,11 +668,14 @@ AtDCore.prototype.isIE = function() {
                   }
                   (function(sugg)
                    {
+                      var iTmp = i;
                       m.add({
                          title   : sugg, 
                          onclick : function() 
                          {
                             ed.core.applySuggestion(e.target, sugg);
+                            t._serverLog('AcceptCorrection ' + lang + ":" + errorDescription["id"] + " " 
+					 + sugg + ":" + iTmp + " context: " + errorDescription["context"]);
                             t._checkDone();
                          }
                       });
@@ -715,6 +733,7 @@ AtDCore.prototype.isIE = function() {
                onclick : function() 
                {
                   dom.remove(e.target, 1);
+		  t._serverLog('IgnoreRule ' + lang + ':' + errorDescription["id"] + " context: " + errorDescription["context"]);
                   t._checkDone();
                }
             });
