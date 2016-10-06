@@ -84,6 +84,7 @@ AtDCore.prototype.processJSON = function(responseJSON) {
         suggestion["subid"]       = match.rule.subId;
         suggestion["its20type"]   = match.rule.issueType;
         suggestion["context"]     = match.context.text;
+        suggestion["contextoffset"] = match.context.offset;
         var urls = match.rule.urls;
         if (urls && urls.length > 0) {
             if (urls[0].value) {
@@ -120,6 +121,7 @@ AtDCore.prototype.findSuggestion = function(element) {
     errorDescription["description"] = this.getSurrogatePart(metaInfo, 'description');
     errorDescription["coveredtext"] = this.getSurrogatePart(metaInfo, 'coveredtext');
     errorDescription["context"] = this.getSurrogatePart(metaInfo, 'context');
+    errorDescription["contextoffset"] = this.getSurrogatePart(metaInfo, 'contextoffset');
     var suggestions = this.getSurrogatePart(metaInfo, 'suggestions');
     if (suggestions) {
         errorDescription["suggestions"] = suggestions.split("#");
@@ -157,9 +159,6 @@ AtDCore.prototype.markMyWords = function() {
             previousSpanStart = spanStart;
             
             var ruleId = suggestion.ruleid;
-	    if (typeof suggestion.subid != 'undefined') {
-		ruleId += '[' + suggestion.subid + ']';
-	    }
             var locqualityissuetype = suggestion.its20type;
             var cssName;
             if (locqualityissuetype == "misspelling") {
@@ -174,8 +173,8 @@ AtDCore.prototype.markMyWords = function() {
             var delim = this.surrogateAttributeDelimiter;
             var coveredText = newText.substring(spanStart, spanEnd);
             var metaInfo = ruleId + delim + suggestion.subid + delim + suggestion.description + delim 
-		+ suggestion.suggestions + delim + coveredText + delim + suggestion.context;
-	        //            var metaInfo = ruleId + delim + suggestion.description + delim + suggestion.suggestions;
+		+ suggestion.suggestions + delim + coveredText + delim + suggestion.context + delim + suggestion.contextoffset;
+	    //var metaInfo = ruleId + delim + suggestion.description + delim + suggestion.suggestions;
             if (suggestion.moreinfo) {
                 metaInfo += delim + suggestion.moreinfo;
             }
@@ -243,8 +242,10 @@ AtDCore.prototype.getSurrogatePart = function(surrogateString, part) {
         return parts[4];
     } else if (part == 'context') {
         return parts[5];
-    } else if (part == 'url' && parts.length >= 6) {
+    } else if (part == 'contextoffset') {
         return parts[6];
+    } else if (part == 'url' && parts.length >= 7) {
+        return parts[7];
     }
     console.log("No part '" + part + "' found in surrogateString: " + surrogateString);
     return null;
@@ -564,12 +565,31 @@ AtDCore.prototype.isIE = function() {
       {
       },
 
-      _serverLog : function(message)
+      _serverLog : function(type, errorDescription, suggestion, suggestion_position)
       {
-          jQuery.ajax({
-              url: 'http://riuraueditors.cat/correctorweb/log/log.php?msg=' + message + " - agent: " + navigator.userAgent,
+	  var data = {"type": type,
+		      "rule": errorDescription["id"],
+		      "rule_id": errorDescription["subid"],
+		      "incorrect_text": errorDescription["coveredtext"],
+                      "incorrect_position": errorDescription["contextoffset"],
+		      "context": errorDescription["context"],
+                      "suggestion": suggestion,
+		      "suggestion_position": suggestion_position};
+	  $.ajax({
+	      url: 'https://www.softcatala.org/languagetool/feedback/log',
+	      type: 'POST',
+	      data: JSON.stringify(data),
+	      contentType: 'application/json; charset=utf-8',
+	      dataType: 'json',
+	  });
+
+          /*jQuery.ajax({
+              url: 'http://riuraueditors.cat/correctorweb/log/log.php?msg=' + JSON.stringify(data),
               type: 'POST'
-          });
+          });*/
+
+
+
       },
 
       _removeWords : function(w) 
@@ -675,8 +695,7 @@ AtDCore.prototype.isIE = function() {
                          onclick : function() 
                          {
                             ed.core.applySuggestion(e.target, sugg);
-                            t._serverLog('AcceptCorrection ' + lang + ":" + errorDescription["id"] + " " 
-					 + sugg + ":" + iTmp + " context: " + errorDescription["context"]);
+                            t._serverLog('AcceptCorrection', errorDescription, sugg, iTmp);
                             t._checkDone();
                          }
                       });
@@ -734,7 +753,7 @@ AtDCore.prototype.isIE = function() {
                onclick : function() 
                {
                   dom.remove(e.target, 1);
-		  t._serverLog('IgnoreRule ' + lang + ':' + errorDescription["id"] + " context: " + errorDescription["context"]);
+                  t._serverLog('IgnoreRule', errorDescription, '', 0);
                   t._checkDone();
                }
             });
