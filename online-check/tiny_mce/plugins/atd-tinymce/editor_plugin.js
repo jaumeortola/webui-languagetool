@@ -568,8 +568,8 @@ AtDCore.prototype.isIE = function() {
       _serverLog : function(type, errorDescription, suggestion, suggestion_position)
       {
 	  var data = {"type": type,
-		      "rule_id": errorDescription["id"],
-		      "rule_sub_id": errorDescription["subid"] || 0,
+                      "rule_id": errorDescription["id"],
+                      "rule_sub_id": errorDescription["subid"] || 0,
 		      "incorrect_text": errorDescription["coveredtext"],
                       "incorrect_position": errorDescription["contextoffset"],
 		      "context": errorDescription["context"],
@@ -582,14 +582,6 @@ AtDCore.prototype.isIE = function() {
 	      contentType: 'application/json; charset=utf-8',
 	      dataType: 'json',
 	  });
-
-          /*jQuery.ajax({
-              url: 'http://riuraueditors.cat/correctorweb/log/log.php?msg=' + JSON.stringify(data),
-              type: 'POST'
-          });*/
-
-
-
       },
 
       _removeWords : function(w) 
@@ -753,7 +745,7 @@ AtDCore.prototype.isIE = function() {
                onclick : function() 
                {
                   dom.remove(e.target, 1);
-                  t._serverLog('IgnoreRule', errorDescription, '', 0);
+                  t._serverLog('IgnoreRule', errorDescription, '', -1);
                   t._checkDone();
                }
             });
@@ -851,7 +843,7 @@ AtDCore.prototype.isIE = function() {
       {
          var url = this.editor.getParam("languagetool_rpc_url", "{backend}");
          var plugin = this;
-	   /*alert(data);*/
+				 /*alert(data);*/
          if (url == '{backend}') 
          {
             this.editor.setProgressState(0);
@@ -863,78 +855,78 @@ AtDCore.prototype.isIE = function() {
           var enable="";
           var disable="";
           if (catOptions.indexOf("formes_generals")>=0)
-	        {
-		          enable = "EXIGEIX_VERBS_CENTRAL,EXIGEIX_POSSESSIUS_V,EVITA_PRONOMS_VALENCIANS";
-		          disable = "EXIGEIX_VERBS_VALENCIANS,EXIGEIX_VERBS_BALEARS";
-		      }
-	    else if (catOptions.indexOf("formes_balears")>=0)
-		  {
-		            enable = "EXIGEIX_VERBS_BALEARS,EXIGEIX_POSSESSIUS_V,EVITA_PRONOMS_VALENCIANS";
-		            disable = "EXIGEIX_VERBS_CENTRAL,CA_SIMPLE_REPLACE_BALEARIC";
-		        }
-	    else if (catOptions.indexOf("formes_valencianes")>=0)
-		  {
-		            enable = "EXIGEIX_VERBS_VALENCIANS,EXIGEIX_POSSESSIUS_U";
-		            disable = "EXIGEIX_VERBS_CENTRAL,EVITA_DEMOSTRATIUS_EIXE,EXIGEIX_POSSESSIUS_V";
-		            
-		            //opcions dins de les formes valencianes
-		            if (catOptions.indexOf("accentuacio_general")>=0)
-				      {
-					    disable = disable + ",EXIGEIX_ACCENTUACIO_VALENCIANA";
-					    enable = enable + ",EXIGEIX_ACCENTUACIO_GENERAL";
-					        };
-		            if (catOptions.indexOf("incoatius_eix")>=0)
-				      {
-					    enable = enable + ",EXIGEIX_VERBS_EIX";
-					    disable = disable + ",EXIGEIX_VERBS_IX";
-					        }
-		            else
-				      {
-					    enable = enable + ",EXIGEIX_VERBS_IX";
-					    disable = disable + ",EXIGEIX_VERBS_EIX";
-					        };
-		            if (catOptions.indexOf("incoatius_isc")>=0)
-				      {
-					    enable = enable + ",EXIGEIX_VERBS_ISC";
-					    disable = disable + ",EXIGEIX_VERBS_ESC";
-					        } 
-		            else
-				      {
-					    enable = enable + ",EXIGEIX_VERBS_ESC";
-					    disable = disable + ",EXIGEIX_VERBS_ISC";
-					        };
-		            if (catOptions.indexOf("demostratius_aquest")>=0)
-				      {
-					    enable = enable + ",EVITA_DEMOSTRATIUS_ESTE";
-					    disable = disable + ",EVITA_DEMOSTRATIUS_AQUEST";
-					        }
-		            else
-				      {
-					    enable = enable + ",EVITA_DEMOSTRATIUS_AQUEST,EVITA_DEMOSTRATIUS_AQUEIX";
-					    disable = disable + ",EVITA_DEMOSTRATIUS_ESTE";
-					        };
-		        }
-	    //opcions per a totes les variants territorials
-	    if (catOptions.indexOf("SE_DAVANT_SC")>=0)
-		  {
-		            enable = enable + ",SE_DAVANT_SC";
-		        }
-	    else
-		  {
-		            disable = disable + ",SE_DAVANT_SC";
-		        };
-	    if (catOptions.indexOf("CA_UNPAIRED_QUESTION")>=0)
-		  {
-		            enable = enable + ",CA_UNPAIRED_QUESTION";
-		        }
-	    else
-		  {
-		            disable = disable + ",CA_UNPAIRED_QUESTION";
-		        };
-	    //End of Catalan options
+	  {
+	      enable = "EXIGEIX_VERBS_CENTRAL,EXIGEIX_POSSESSIUS_V,EVITA_PRONOMS_VALENCIANS";
+	      disable = "EXIGEIX_VERBS_VALENCIANS,EXIGEIX_VERBS_BALEARS";
+	  }
+	  else if (catOptions.indexOf("formes_balears")>=0)
+	  {
+	      enable = "EXIGEIX_VERBS_BALEARS,EXIGEIX_POSSESSIUS_V,EVITA_PRONOMS_VALENCIANS";
+	      disable = "EXIGEIX_VERBS_CENTRAL,CA_SIMPLE_REPLACE_BALEARIC";
+	  }
+	  else if (catOptions.indexOf("formes_valencianes")>=0)
+	  {
+	      enable = "EXIGEIX_VERBS_VALENCIANS,EXIGEIX_POSSESSIUS_U";
+	      disable = "EXIGEIX_VERBS_CENTRAL,EVITA_DEMOSTRATIUS_EIXE,EXIGEIX_POSSESSIUS_V";
+	      
+	      //opcions dins de les formes valencianes
+	      if (catOptions.indexOf("accentuacio_general")>=0)
+	      {
+		  disable = disable + ",EXIGEIX_ACCENTUACIO_VALENCIANA";
+		  enable = enable + ",EXIGEIX_ACCENTUACIO_GENERAL";
+	      };
+	      if (catOptions.indexOf("incoatius_eix")>=0)
+	      {
+		  enable = enable + ",EXIGEIX_VERBS_EIX";
+		  disable = disable + ",EXIGEIX_VERBS_IX";
+	      }
+	      else
+	      {
+		  enable = enable + ",EXIGEIX_VERBS_IX";
+		  disable = disable + ",EXIGEIX_VERBS_EIX";
+	      };
+	      if (catOptions.indexOf("incoatius_isc")>=0)
+	      {
+		  enable = enable + ",EXIGEIX_VERBS_ISC";
+		  disable = disable + ",EXIGEIX_VERBS_ESC";
+	      } 
+	      else
+	      {
+		  enable = enable + ",EXIGEIX_VERBS_ESC";
+		  disable = disable + ",EXIGEIX_VERBS_ISC";
+	      };
+	      if (catOptions.indexOf("demostratius_aquest")>=0)
+	      {
+		  enable = enable + ",EVITA_DEMOSTRATIUS_ESTE";
+		  disable = disable + ",EVITA_DEMOSTRATIUS_AQUEST";
+	      }
+	      else
+	      {
+		  enable = enable + ",EVITA_DEMOSTRATIUS_AQUEST,EVITA_DEMOSTRATIUS_AQUEIX";
+		  disable = disable + ",EVITA_DEMOSTRATIUS_ESTE";
+	      };
+	  }
+	  //opcions per a totes les variants territorials
+	  if (catOptions.indexOf("SE_DAVANT_SC")>=0)
+	  {
+	      enable = enable + ",SE_DAVANT_SC";
+	  }
+	  else
+	  {
+	      disable = disable + ",SE_DAVANT_SC";
+	  };
+	  if (catOptions.indexOf("CA_UNPAIRED_QUESTION")>=0)
+	  {
+	      enable = enable + ",CA_UNPAIRED_QUESTION";
+	  }
+	  else
+	  {
+	      disable = disable + ",CA_UNPAIRED_QUESTION";
+	  };
+	  //End of Catalan options
 
-	    
-	    var postData = "text=" + encodeURI(data).replace(/&/g, '%26').replace(/\+/g, '%2B')
+	  
+	  var postData = "text=" + encodeURI(data).replace(/&/g, '%26').replace(/\+/g, '%2B')
               + "&language=" + encodeURI(languageCode)
               + "&enabledRules=" + enable 
               + "&disabledRules=WHITESPACE_RULE," + disable;
@@ -957,4 +949,3 @@ AtDCore.prototype.isIE = function() {
    // Register plugin
    tinymce.PluginManager.add('AtD', tinymce.plugins.AfterTheDeadlinePlugin);
 })();
-
