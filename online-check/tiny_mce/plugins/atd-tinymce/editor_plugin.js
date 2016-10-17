@@ -568,14 +568,14 @@ AtDCore.prototype.isIE = function() {
       _serverLog : function(type, errorDescription, suggestion, suggestion_position)
       {
 	  var data = {"type": type,
-		      "rule": errorDescription["id"],
-		      "rule_id": errorDescription["subid"],
+		      "rule_id": errorDescription["id"],
+		      "rule_sub_id": errorDescription["subid"] || 0,
 		      "incorrect_text": errorDescription["coveredtext"],
                       "incorrect_position": errorDescription["contextoffset"],
 		      "context": errorDescription["context"],
                       "suggestion": suggestion,
 		      "suggestion_position": suggestion_position};
-	  $.ajax({
+	  jQuery.ajax({
 	      url: 'https://www.softcatala.org/languagetool/feedback/log',
 	      type: 'POST',
 	      data: JSON.stringify(data),
@@ -788,10 +788,10 @@ AtDCore.prototype.isIE = function() {
            var xPos = p1.x;
            m.showMenu(xPos, p1.y + e.target.offsetHeight - vp.y);
            this.menuVisible =  true;
-           var menuDiv = $('#menu_checktext_spellcheckermenu_co');
+           var menuDiv = jQuery('#menu_checktext_spellcheckermenu_co');
            if (menuDiv) {
                var menuWidth = menuDiv.width();
-               var textBoxWidth = $('#checktextpara').width();  // not sure why we cannot directly use the textarea's width
+               var textBoxWidth = jQuery('#checktextpara').width();  // not sure why we cannot directly use the textarea's width
                if (xPos + menuWidth > textBoxWidth) {
                    // menu runs out of screen, move it to the left
                    var diff = xPos + menuWidth - textBoxWidth;
