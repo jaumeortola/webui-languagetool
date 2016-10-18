@@ -81,7 +81,7 @@ AtDCore.prototype.processJSON = function(responseJSON) {
         suggestion["errorlength"] = match.length;
         suggestion["type"]        = match.rule.category.name;
         suggestion["ruleid"]      = match.rule.id;
-        suggestion["subid"]       = match.rule.subId;
+        suggestion["subid"]       = match.rule.subId || 0;
         suggestion["its20type"]   = match.rule.issueType;
         suggestion["context"]     = match.context.text;
         suggestion["contextoffset"] = match.context.offset;
@@ -569,7 +569,7 @@ AtDCore.prototype.isIE = function() {
       {
 	  var data = {"type": type,
                       "rule_id": errorDescription["id"],
-                      "rule_sub_id": errorDescription["subid"] || 0,
+                      "rule_sub_id": errorDescription["subid"],
 		      "incorrect_text": errorDescription["coveredtext"],
                       "incorrect_position": errorDescription["contextoffset"],
 		      "context": errorDescription["context"],
