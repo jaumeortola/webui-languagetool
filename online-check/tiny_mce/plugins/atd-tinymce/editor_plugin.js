@@ -700,6 +700,7 @@ AtDCore.prototype.isIE = function() {
             var lang = plugin.editor.getParam('languagetool_i18n_current_lang')();
             var explainText = plugin.editor.getParam('languagetool_i18n_explain')[lang] || "Explain...";
             var ignoreThisText = plugin.editor.getParam('languagetool_i18n_ignore_once')[lang] || "Ignore this error";
+            var editManually = plugin.editor.getParam('languagetool_i18n_edit_manually')[lang] || "Edit manually";
             var ruleImplementation = "Rule implementation";
             if (plugin.editor.getParam('languagetool_i18n_rule_implementation')) {
               ruleImplementation = plugin.editor.getParam('languagetool_i18n_rule_implementation')[lang] || "Rule implementation";
@@ -739,6 +740,16 @@ AtDCore.prototype.isIE = function() {
                })(errorDescription["moreinfo"]);
                m.addSeparator();
             }
+
+            m.add({
+               title : editManually,
+               onclick : function() 
+               {
+                  dom.remove(e.target, 1);
+                  t._serverLog('EditManually', errorDescription, '', -1);
+                  t._checkDone();
+               }
+            });
 
             m.add({
                title : ignoreThisText,
