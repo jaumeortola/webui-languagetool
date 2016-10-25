@@ -936,8 +936,14 @@ AtDCore.prototype.isIE = function() {
 	  };
 	  //End of Catalan options
 
-	  
-	  var postData = "text=" + encodeURI(data).replace(/&/g, '%26').replace(/\+/g, '%2B')
+          var normalizedText;
+          if (data.hasOwnProperty('normalize')) {
+             normalizedText = data.normalize("NFC");
+          } else {
+             normalizedText=data;
+          }
+
+	  var postData = "text=" + encodeURI(normalizedText).replace(/&/g, '%26').replace(/\+/g, '%2B')
               + "&language=" + encodeURI(languageCode)
               + "&enabledRules=" + enable 
               + "&disabledRules=WHITESPACE_RULE," + disable;
