@@ -124,7 +124,8 @@ var SC_COOKIE = 'sc-languagetool';
   });
 
   function doit() {
-    if (tinyMCE.activeEditor.getContent().length > 50000) {
+    var userText = tinyMCE.activeEditor.getContent();
+    if (userText.length > 50000) {
       var errorMsg = "Heu superat el l\u00EDmit de 50.000 car\u00E0cters.";
       alert(errorMsg);
     } else {
@@ -144,6 +145,11 @@ var SC_COOKIE = 'sc-languagetool';
         .val() + "," + $("input[name=CA_UNPAIRED_QUESTION]:checked").val();
 
       save_cookie_status();
+
+      if (String.prototype.hasOwnProperty('normalize')) {
+         var normalizedText = userText.normalize("NFC");
+         tinyMCE.activeEditor.setContent(normalizedText);
+      }
 
       tinyMCE.activeEditor.execCommand('mceWritingImprovementTool',
         langCode, catOptions);
